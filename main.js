@@ -15,17 +15,24 @@
 
       <div class="product-image">
         <img :src="image" />
+        <a :href="link" target="_blank">More products like this</a>
       </div>
 
       <div class="product-info">
         <h1>{{ title }}</h1>
-        <p v-if="inStock">In Stock</p>
+        <p v-if="inStock">In Stock On Sale!</p>
         <p v-else>Out of Stock</p>
         <p>Shipping: {{ shipping }}</p>
 
-        <ul>
+        <div class="array">
+        <ul class="detail">
           <li v-for="detail in details">{{ detail }}</li>
         </ul>
+
+        <ul class="size">
+          <li v-for="size in sizes">{{ size }}</li>
+        </ul>
+        </div>
 
         <div v-for="(variant, index) in variants"
              :key="variant.variantId"
@@ -34,11 +41,15 @@
              @mouseover="updateProduct(index)">
         </div>
 
+
         <button v-on:click="addToCart"
                 :disabled="!inStock"
                 :class="{ disabledButton: !inStock }"
                 >
                 Add to Cart
+        </button>
+        <button v-on:click="removeFromCart" class="remove-btn">
+          Remove from cart
         </button>
 
         </div>
@@ -51,14 +62,16 @@
       return {
         brand: 'Vue Mastery',
         product: 'Socks',
+        link: 'https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks',
         selectedVariant: 0,
         details: ["80% cotton", "20% polyester", "Gender-neutral"],
+        sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
         variants: [
           {
             variantId: 2234,
             variantColor: "green",
             variantImage: './assets/vmSocks-green-onWhite.jpg',
-            variantQuantity: 10
+            variantQuantity: 10,
           },
           {
             variantId: 2235,
@@ -73,6 +86,9 @@
     methods: {
       addToCart() {
         this.$emit('add-to-cart',this.variants[this.selectedVariant].variantId)
+      },
+      removeFromCart() {
+        this.$emit('remove-from-cart',this.variants[this.selectedVariant].variantId)
       },
       updateProduct(index) {
         this.selectedVariant = index
@@ -222,6 +238,9 @@
     methods: {
       updateCart(id) {
         this.cart.push(id)
+      },
+      removeFromCart(id) {
+        this.cart.pop(id)
       }
     }
   })
